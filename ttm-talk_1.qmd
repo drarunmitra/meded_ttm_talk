@@ -207,37 +207,21 @@ ggplot(births, aes(x = smoke, y = bwt, fill = smoke)) +
 
 ## Establishment of Data Science Lab
 
-> AMC Data Science Lab at SCTIMST, Trivandrm doption of Newer Methods
+> AMC Data Science Lab at SCTIMST, Trivandrum
 
 ![](amc_data_science_lab.png)
 
 ## Did We Build Capacity?
 
+![](images/Screenshot_20260912-111023.png)
 
+![](images/Screenshot_20260912-111207.png)
 
-:::: {.columns}
-::: {.column width="50%"}
+![](images/Screenshot_20260912-111244.png)
 
-- Aspirations
-- Adoption of Newer Methods
-- Establishment of AMC Health Data Science Lab
+![](images/Screenshot_20260912-111256.png)
 
-- Success Stories
-
-:::
-::: {.column width="50%" .ttm-panel}
-
-![](aspirations.png){data-step="1"}
-
-![](images/eval-2.png){data-step="2"}
-
-![](images/eval-3.png){data-step="3"}
-
-![](images/eval-4.png){data-step="4"}
-
-:::
-::::
-
+![](images/Screenshot_20260912-111348.png)
 
 ## Reflections {.ttm}
 
@@ -247,11 +231,5 @@ ggplot(births, aes(x = smoke, y = bwt, fill = smoke)) +
 - Demand Increasing
 - Address Supply Gap through Capacity Building
 
-## Newer Tools to Teach 
-::: {.notes}
-Eight clicks. A finished ggplot2 figure tilts back, the layers fan apart, and
-each layer lights up beside the line of code that made it. Teaching material
-built for the workshop, not borrowed slides.
-:::
 
 # Thank You
