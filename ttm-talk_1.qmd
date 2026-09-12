@@ -1,7 +1,7 @@
 ---
 title: "Building Capacity in Public Health Data Science"
 subtitle: "A Five-Year Multi-Cohort Evaluation (2021–2026)"
-author: "Dr. Arun Mitra"
+author: "Arun Mitra, Biju Soman, Rakhal Gaitonde, Gurpreet Singh, et.al."
 format:
   revealjs:
     embed-resources: true
@@ -16,7 +16,7 @@ format:
     title-slide-attributes:
       data-background-image: images/logos.png
       data-background-size: 46%
-      data-background-position: bottom 24px center
+      data-background-position: bottom 12px center
 ---
 
 ## Problem Statement {.ttm}
@@ -208,7 +208,7 @@ ggplot(births, aes(x = smoke, y = bwt, fill = smoke)) +
 
 > AMC Data Science Lab at SCTIMST, Trivandrum
 
-![](amc_data_science_lab.png){fig-align="center"}
+![](amc_data_science_lab_2.png){fig-align="center"}
 
 ## Did We Build Capacity?
 

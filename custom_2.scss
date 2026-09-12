@@ -1,3 +1,11 @@
+/*-- scss:defaults --*/
+
+// Slide titles. Reveal's default --r-heading2-size is 1.6em; 20% smaller is
+// 1.28em. Set through Quarto's own variable so the --r-heading2-size custom
+// property is regenerated, rather than overriding .reveal h2 in the rules
+// block and fighting the cascade.
+$presentation-h2-font-size: 1.28em;
+
 /*-- scss:rules --*/
 
 // Both columns get the same fixed height, so the row never grows when a
