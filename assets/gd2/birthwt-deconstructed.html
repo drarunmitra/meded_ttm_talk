@@ -1,0 +1,307 @@
+<script>
+/* ---- ggplot2, deconstructed: three figures from the low birth weight data ----
+ * Engine adapted from Emil Hvitfeldt's tidy-animations "ggplot2-deconstructed-2":
+ * https://github.com/EmilHvitfeldt/tidy-animations
+ * The tilt maths, card mechanics, stage logic and TM.gate wiring are his.
+ * Generalised here so one deck can hold several stages; the data, planes and
+ * code listings are this workshop's.
+ *
+ * Each stage is a slide carrying .gd2-slide, a <div class="gd2-stage" data-gd2="KEY">,
+ * and 8 fragments: KEY-lay, KEY-explode, KEY-f1..f4, KEY-collapse, KEY-unrotate.
+ * (A 3-plane figure uses f1..f3 and 7 fragments.)
+ */
+(function () {
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const W = 600, H = 380;
+
+  function el(name, attrs, parent) {
+    const e = document.createElementNS(SVGNS, name);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function txt(svg, x, y, s, attrs) {
+    const t = el('text', Object.assign({ x, y, 'font-family': 'sans-serif' }, attrs), svg);
+    t.textContent = s;
+    return t;
+  }
+  function expand(lo, hi) { const e = (hi - lo) * 0.05; return [lo - e, hi + e]; }
+
+  // deterministic jitter, identical at every showing
+  let seed = 20260909;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+
+  function svgPlane() {
+    const d = document.createElement('div');
+    d.className = 'gd2-plane';
+    d.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;';
+    const tilt = document.createElement('div');
+    tilt.className = 'gd2-tilt';
+    const card = document.createElement('div');
+    card.className = 'gd2-card';
+    tilt.appendChild(card);
+    const s = el('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H });
+    s.style.cssText = 'position:absolute;left:0;top:0;';
+    tilt.appendChild(s);
+    d.appendChild(tilt);
+    return { div: d, tilt, svg: s, card };
+  }
+
+  // ---- shared panel drawing ---------------------------------------------
+  function panel(svg, M, yBreaks, yMinor, sy, xBreaks, xMinor, sx) {
+    const PX0 = M.l, PX1 = W - M.r, PY0 = M.t, PY1 = H - M.b;
+    el('rect', { x: PX0, y: PY0, width: PX1 - PX0, height: PY1 - PY0, fill: '#EBEBEB' }, svg);
+    (yMinor || []).forEach(v => el('line', { x1: PX0, x2: PX1, y1: sy(v), y2: sy(v),
+                                             stroke: '#fff', 'stroke-width': 1 }, svg));
+    (xMinor || []).forEach(v => el('line', { x1: sx(v), x2: sx(v), y1: PY0, y2: PY1,
+                                             stroke: '#fff', 'stroke-width': 1 }, svg));
+    yBreaks.forEach(v => {
+      el('line', { x1: PX0, x2: PX1, y1: sy(v), y2: sy(v), stroke: '#fff', 'stroke-width': 2 }, svg);
+      txt(svg, PX0 - 12, sy(v) + 6, v, { 'text-anchor': 'end', 'font-size': 16, fill: '#4d4d4d' });
+    });
+    (xBreaks || []).forEach(v => {
+      el('line', { x1: sx(v), x2: sx(v), y1: PY0, y2: PY1, stroke: '#fff', 'stroke-width': 2 }, svg);
+      txt(svg, sx(v), PY1 + 24, v, { 'text-anchor': 'middle', 'font-size': 16, fill: '#4d4d4d' });
+    });
+  }
+
+  // =======================================================================
+  // FIGURE 1 — boxplot + jitter: birth weight by maternal smoking
+  // =======================================================================
+  const BOXPTS = [[0,2523],[0,2551],[1,2557],[1,2594],[1,2600],[0,2622],[0,2637],[0,2637],[1,2663],[1,2665],[0,2722],[0,2733],[0,2751],[0,2750],[1,2769],[1,2769],[0,2778],[1,2782],[0,2807],[1,2821],[0,2835],[0,2835],[0,2836],[0,2863],[0,2877],[0,2877],[1,2906],[0,2920],[1,2920],[0,2920],[0,2920],[1,2948],[1,2948],[0,2977],[0,2977],[1,2977],[1,2977],[1,2922],[1,3005],[1,3033],[1,3042],[0,3062],[0,3062],[0,3062],[1,3062],[1,3062],[0,3080],[0,3090],[0,3090],[1,3090],[0,3100],[0,3104],[1,3132],[1,3147],[0,3175],[0,3175],[1,3203],[0,3203],[0,3203],[0,3225],[0,3225],[0,3232],[0,3232],[0,3234],[1,3260],[0,3274],[0,3274],[1,3303],[0,3317],[0,3317],[1,3317],[1,3321],[1,3331],[0,3374],[1,3374],[0,3402],[0,3416],[1,3430],[1,3444],[0,3459],[0,3460],[0,3473],[0,3544],[0,3487],[0,3544],[1,3572],[0,3572],[0,3586],[0,3600],[0,3614],[0,3614],[0,3629],[1,3629],[1,3637],[1,3643],[0,3651],[0,3651],[1,3651],[1,3651],[0,3699],[0,3728],[1,3756],[0,3770],[0,3770],[0,3770],[0,3790],[0,3799],[0,3827],[1,3856],[0,3860],[0,3860],[0,3884],[1,3884],[0,3912],[1,3940],[0,3941],[0,3941],[0,3969],[0,3983],[0,3997],[0,3997],[0,4054],[0,4054],[0,4111],[0,4153],[0,4167],[0,4174],[1,4238],[0,4593],[0,4990],[1,709],[0,1021],[1,1135],[0,1330],[0,1474],[0,1588],[0,1588],[0,1701],[0,1729],[1,1790],[1,1818],[1,1885],[0,1893],[0,1899],[1,1928],[1,1928],[0,1928],[1,1936],[0,1970],[0,2055],[0,2055],[0,2082],[1,2084],[1,2084],[0,2100],[1,2125],[1,2126],[1,2187],[0,2187],[1,2211],[1,2225],[0,2240],[0,2240],[0,2282],[1,2296],[1,2296],[0,2301],[0,2325],[1,2353],[0,2353],[1,2367],[1,2381],[1,2381],[0,2381],[0,2410],[1,2410],[1,2410],[1,2414],[1,2424],[0,2438],[0,2442],[0,2450],[1,2466],[1,2466],[1,2466],[0,2495],[1,2495],[0,2495],[1,2495]];
+  const GROUPS = [
+    { lab: 'Non-smoker', fill: '#4C72B0', q1: 2509, med: 3100, q3: 3622, lo: 1021, hi: 4990 },
+    { lab: 'Smoker',     fill: '#DD8452', q1: 2370, med: 2776, q3: 3246, lo:  709, hi: 4238 }
+  ];
+  const F1 = (function () {
+    const M = { l: 76, r: 30, t: 50, b: 70 };
+    const PX0 = M.l, PX1 = W - M.r, PY0 = M.t, PY1 = H - M.b;
+    const yd = expand(709, 4990);
+    const sy = v => PY1 - (v - yd[0]) / (yd[1] - yd[0]) * (PY1 - PY0);
+    const gx = i => PX0 + (PX1 - PX0) * (i + 0.5) / GROUPS.length;
+    const BOXW = (PX1 - PX0) / GROUPS.length * 0.55;
+    return {
+      builders: [
+        function coord(svg) {
+          panel(svg, M, [1000, 2000, 3000, 4000, 5000], [1500, 2500, 3500, 4500], sy);
+          GROUPS.forEach((g, i) => txt(svg, gx(i), PY1 + 26, g.lab,
+            { 'text-anchor': 'middle', 'font-size': 17, fill: '#4d4d4d' }));
+        },
+        function boxes(svg) {
+          GROUPS.forEach((g, i) => {
+            const x = gx(i);
+            el('line', { x1: x, x2: x, y1: sy(g.lo), y2: sy(g.hi),
+                         stroke: '#1d2433', 'stroke-width': 1.8 }, svg);
+            el('rect', { x: x - BOXW / 2, y: sy(g.q3), width: BOXW,
+                         height: sy(g.q1) - sy(g.q3), fill: g.fill, 'fill-opacity': 0.75,
+                         stroke: '#1d2433', 'stroke-width': 1.8 }, svg);
+            el('line', { x1: x - BOXW / 2, x2: x + BOXW / 2, y1: sy(g.med), y2: sy(g.med),
+                         stroke: '#1d2433', 'stroke-width': 3.4 }, svg);
+          });
+        },
+        function jitter(svg) {
+          BOXPTS.forEach(p => el('circle', {
+            cx: gx(p[0] === 0 ? 0 : 1) + (rnd() - 0.5) * BOXW * 0.9,
+            cy: sy(p[1]), r: 3.2, fill: '#1d2433', 'fill-opacity': 0.35 }, svg));
+        },
+        function labs(svg) {
+          el('line', { x1: PX0, x2: PX1, y1: sy(2500), y2: sy(2500),
+                       stroke: '#c0392b', 'stroke-width': 2.4, 'stroke-dasharray': '8 5' }, svg);
+          txt(svg, PX1 - 6, sy(2500) - 8, '2500 g',
+              { 'text-anchor': 'end', 'font-size': 14, 'font-weight': 700, fill: '#c0392b' });
+          txt(svg, PX0, 22, 'Birth weight by maternal smoking',
+              { 'font-size': 21, 'font-weight': 700, fill: '#1d2433' });
+          txt(svg, PX0, 40, '189 births; dashed line marks low birth weight',
+              { 'font-size': 14, fill: '#6b7480' });
+          const yt = txt(svg, 22, (PY0 + PY1) / 2, 'Birth weight (g)',
+                         { 'text-anchor': 'middle', 'font-size': 17, fill: '#1d2433' });
+          yt.setAttribute('transform', `rotate(-90 22 ${(PY0 + PY1) / 2})`);
+        }
+      ],
+      code: `<span data-blk="0"><span class="gd2-fn">ggplot</span>(births, <span class="gd2-fn">aes</span>(<span class="gd2-arg">x</span> = smoke, <span class="gd2-arg">y</span> = bwt, <span class="gd2-arg">fill</span> = smoke)) +</span>
+<span data-blk="1">  <span class="gd2-fn">geom_boxplot</span>(<span class="gd2-arg">alpha</span> = <span class="gd2-num">0.75</span>, <span class="gd2-arg">outlier.shape</span> = NA) +</span>
+<span data-blk="2">  <span class="gd2-fn">geom_jitter</span>(<span class="gd2-arg">width</span> = <span class="gd2-num">0.12</span>, <span class="gd2-arg">alpha</span> = <span class="gd2-num">0.35</span>) +</span>
+<span data-blk="3">  <span class="gd2-fn">geom_hline</span>(<span class="gd2-arg">yintercept</span> = <span class="gd2-num">2500</span>, <span class="gd2-arg">linetype</span> = <span class="gd2-str">"dashed"</span>) +
+  <span class="gd2-fn">labs</span>(
+    <span class="gd2-arg">title</span> = <span class="gd2-str">"Birth weight by maternal smoking"</span>,
+    <span class="gd2-arg">y</span> = <span class="gd2-str">"Birth weight (g)"</span>,
+    <span class="gd2-arg">x</span> = NULL
+  )</span>`
+    };
+  })();
+
+  // =======================================================================
+  // FIGURE 2 — histogram: the distribution of birth weight
+  // =======================================================================
+  const HIST = [[625,1],[875,0],[1125,2],[1375,2],[1625,4],[1875,10],[2125,14],[2375,26],[2625,13],[2875,25],[3125,26],[3375,19],[3625,18],[3875,20],[4125,7],[4375,0],[4625,1],[4875,1],[5125,0]];
+  const F2 = (function () {
+    const M = { l: 60, r: 30, t: 50, b: 70 };
+    const PX0 = M.l, PX1 = W - M.r, PY0 = M.t, PY1 = H - M.b;
+    const xd = expand(500, 5250), yd = [0, 27.3];
+    const sx = v => PX0 + (v - xd[0]) / (xd[1] - xd[0]) * (PX1 - PX0);
+    const sy = v => PY1 - (v - yd[0]) / (yd[1] - yd[0]) * (PY1 - PY0);
+    const bw = sx(750) - sx(500);
+    return {
+      builders: [
+        function coord(svg) {
+          panel(svg, M, [0, 10, 20], [5, 15, 25], sy,
+                [1000, 2000, 3000, 4000, 5000], [1500, 2500, 3500, 4500], sx);
+        },
+        function bars(svg) {
+          HIST.forEach(h => {
+            if (!h[1]) return;
+            el('rect', { x: sx(h[0]) - bw / 2, y: sy(h[1]), width: bw - 1,
+                         height: sy(0) - sy(h[1]), fill: '#4C72B0',
+                         stroke: '#fff', 'stroke-width': 1 }, svg);
+          });
+        },
+        function marker(svg) {
+          el('line', { x1: sx(2500), x2: sx(2500), y1: PY0, y2: PY1,
+                       stroke: '#c0392b', 'stroke-width': 2.4, 'stroke-dasharray': '8 5' }, svg);
+          txt(svg, sx(2500) - 8, PY0 + 16, '2500 g',
+              { 'text-anchor': 'end', 'font-size': 14, 'font-weight': 700, fill: '#c0392b' });
+        },
+        function labs(svg) {
+          txt(svg, PX0, 22, 'How heavy are these babies?',
+              { 'font-size': 21, 'font-weight': 700, fill: '#1d2433' });
+          txt(svg, PX0, 40, '189 births, bins of 250 g',
+              { 'font-size': 14, fill: '#6b7480' });
+          txt(svg, (PX0 + PX1) / 2, H - 22, 'Birth weight (g)',
+              { 'text-anchor': 'middle', 'font-size': 17, fill: '#1d2433' });
+          const yt = txt(svg, 20, (PY0 + PY1) / 2, 'Number of babies',
+                         { 'text-anchor': 'middle', 'font-size': 17, fill: '#1d2433' });
+          yt.setAttribute('transform', `rotate(-90 20 ${(PY0 + PY1) / 2})`);
+        }
+      ],
+      code: `<span data-blk="0"><span class="gd2-fn">ggplot</span>(births, <span class="gd2-fn">aes</span>(<span class="gd2-arg">x</span> = bwt)) +</span>
+<span data-blk="1">  <span class="gd2-fn">geom_histogram</span>(<span class="gd2-arg">binwidth</span> = <span class="gd2-num">250</span>) +</span>
+<span data-blk="2">  <span class="gd2-fn">geom_vline</span>(<span class="gd2-arg">xintercept</span> = <span class="gd2-num">2500</span>, <span class="gd2-arg">linetype</span> = <span class="gd2-str">"dashed"</span>) +</span>
+<span data-blk="3">  <span class="gd2-fn">labs</span>(
+    <span class="gd2-arg">title</span> = <span class="gd2-str">"How heavy are these babies?"</span>,
+    <span class="gd2-arg">x</span> = <span class="gd2-str">"Birth weight (g)"</span>,
+    <span class="gd2-arg">y</span> = <span class="gd2-str">"Number of babies"</span>
+  )</span>`
+    };
+  })();
+
+  // =======================================================================
+  // FIGURE 3 — scatter + smooth: mother's weight against birth weight
+  // =======================================================================
+  const SCAT = [[182,2523,0],[155,2551,0],[105,2557,1],[108,2594,1],[107,2600,1],[124,2622,0],[118,2637,0],[103,2637,0],[123,2663,1],[113,2665,1],[95,2722,0],[150,2733,0],[95,2751,0],[107,2750,0],[100,2769,1],[100,2769,1],[98,2778,0],[118,2782,1],[120,2807,0],[120,2821,1],[121,2835,0],[100,2835,0],[202,2836,0],[120,2863,0],[120,2877,0],[167,2877,0],[122,2906,1],[150,2920,0],[168,2920,1],[113,2920,0],[113,2920,0],[90,2948,1],[121,2948,1],[155,2977,0],[125,2977,0],[140,2977,1],[138,2977,1],[124,2922,1],[215,3005,1],[109,3033,1],[185,3042,1],[189,3062,0],[130,3062,0],[160,3062,0],[90,3062,1],[90,3062,1],[132,3080,0],[132,3090,0],[115,3090,0],[85,3090,1],[120,3100,0],[128,3104,0],[130,3132,1],[95,3147,1],[115,3175,0],[110,3175,0],[110,3203,1],[153,3203,0],[103,3203,0],[119,3225,0],[119,3225,0],[119,3232,0],[110,3232,0],[140,3234,0],[133,3260,1],[169,3274,0],[115,3274,0],[250,3303,1],[141,3317,0],[158,3317,0],[112,3317,1],[150,3321,1],[115,3331,1],[112,3374,0],[135,3374,1],[229,3402,0],[140,3416,0],[134,3430,1],[121,3444,1],[190,3459,0],[131,3460,0],[170,3473,0],[110,3544,0],[127,3487,0],[123,3544,0],[120,3572,1],[105,3572,0],[130,3586,0],[175,3600,0],[125,3614,0],[133,3614,0],[134,3629,0],[235,3629,1],[95,3637,1],[135,3643,1],[135,3651,0],[154,3651,0],[147,3651,1],[147,3651,1],[137,3699,0],[110,3728,0],[184,3756,1],[110,3770,0],[110,3770,0],[120,3770,0],[241,3790,0],[112,3799,0],[169,3827,0],[120,3856,1],[170,3860,0],[186,3860,0],[120,3884,0],[130,3884,1],[117,3912,0],[170,3940,1],[134,3941,0],[135,3941,0],[130,3969,0],[120,3983,0],[95,3997,0],[158,3997,0],[160,4054,0],[115,4054,0],[129,4111,0],[130,4153,0],[120,4167,0],[170,4174,0],[120,4238,1],[116,4593,0],[123,4990,0],[120,709,1],[130,1021,0],[187,1135,1],[105,1330,0],[85,1474,0],[150,1588,0],[97,1588,0],[128,1701,0],[132,1729,0],[165,1790,1],[105,1818,1],[91,1885,1],[115,1893,0],[130,1899,0],[92,1928,1],[150,1928,1],[200,1928,0],[155,1936,1],[103,1970,0],[125,2055,0],[89,2055,0],[102,2082,0],[112,2084,1],[117,2084,1],[138,2100,0],[130,2125,1],[120,2126,1],[130,2187,1],[130,2187,0],[80,2211,1],[110,2225,1],[105,2240,0],[109,2240,0],[148,2282,0],[110,2296,1],[121,2296,1],[100,2301,0],[96,2325,0],[102,2353,1],[110,2353,0],[187,2367,1],[122,2381,1],[105,2381,1],[115,2381,0],[120,2410,0],[142,2410,1],[130,2410,1],[120,2414,1],[110,2424,1],[120,2438,0],[154,2442,0],[105,2450,0],[190,2466,1],[101,2466,1],[95,2466,1],[100,2495,0],[94,2495,1],[142,2495,0],[130,2495,1]];
+  const SM = [[80,2724,2527,2921],[84.4,2743,2558,2928],[88.7,2763,2590,2936],[93.1,2782,2620,2943],[97.4,2801,2651,2952],[101.8,2820,2680,2960],[106.2,2840,2709,2970],[110.5,2859,2737,2981],[114.9,2878,2764,2993],[119.2,2898,2789,3007],[123.6,2917,2812,3022],[127.9,2936,2833,3040],[132.3,2956,2852,3059],[136.7,2975,2869,3081],[141,2994,2884,3104],[145.4,3014,2898,3129],[149.7,3033,2910,3156],[154.1,3052,2920,3184],[158.5,3071,2930,3213],[162.8,3091,2939,3243],[167.2,3110,2947,3273],[171.5,3129,2955,3304],[175.9,3149,2962,3335],[180.3,3168,2969,3367],[184.6,3187,2975,3399],[189,3207,2982,3432],[193.3,3226,2988,3464],[197.7,3245,2994,3497],[202.1,3265,2999,3530],[206.4,3284,3005,3563],[210.8,3303,3011,3596],[215.1,3322,3016,3629],[219.5,3342,3022,3662],[223.8,3361,3027,3695],[228.2,3380,3032,3729],[232.6,3400,3037,3762],[236.9,3419,3043,3795],[241.3,3438,3048,3829],[245.6,3458,3053,3862],[250,3477,3058,3896]];
+  const F3 = (function () {
+    const M = { l: 76, r: 30, t: 50, b: 70 };
+    const PX0 = M.l, PX1 = W - M.r, PY0 = M.t, PY1 = H - M.b;
+    const xd = expand(80, 250), yd = expand(709, 4990);
+    const sx = v => PX0 + (v - xd[0]) / (xd[1] - xd[0]) * (PX1 - PX0);
+    const sy = v => PY1 - (v - yd[0]) / (yd[1] - yd[0]) * (PY1 - PY0);
+    const COL = ['#4C72B0', '#DD8452'];
+    return {
+      builders: [
+        function coord(svg) {
+          panel(svg, M, [1000, 2000, 3000, 4000, 5000], [1500, 2500, 3500, 4500], sy,
+                [100, 150, 200, 250], [125, 175, 225], sx);
+        },
+        function points(svg) {
+          SCAT.forEach(p => el('circle', { cx: sx(p[0]), cy: sy(p[1]), r: 3.6,
+                                           fill: COL[p[2]], 'fill-opacity': 0.85 }, svg));
+        },
+        function smooth(svg) {
+          let up = '', dn = '';
+          SM.forEach((s, i) => { up += `${i ? 'L' : 'M'}${sx(s[0])},${sy(s[3])} `; });
+          for (let i = SM.length - 1; i >= 0; i--) dn += `L${sx(SM[i][0])},${sy(SM[i][2])} `;
+          el('path', { d: up + dn + 'Z', fill: '#999', 'fill-opacity': 0.4 }, svg);
+          let line = '';
+          SM.forEach((s, i) => { line += `${i ? 'L' : 'M'}${sx(s[0])},${sy(s[1])} `; });
+          el('path', { d: line, fill: 'none', stroke: '#000', 'stroke-width': 2.2 }, svg);
+        },
+        function labs(svg) {
+          txt(svg, PX0, 22, "Mother's weight and birth weight",
+              { 'font-size': 21, 'font-weight': 700, fill: '#1d2433' });
+          txt(svg, PX0, 40, 'Colour marks maternal smoking; band is the 95% CI',
+              { 'font-size': 14, fill: '#6b7480' });
+          txt(svg, (PX0 + PX1) / 2, H - 22, 'Weight at last period (lb)',
+              { 'text-anchor': 'middle', 'font-size': 17, fill: '#1d2433' });
+          const yt = txt(svg, 22, (PY0 + PY1) / 2, 'Birth weight (g)',
+                         { 'text-anchor': 'middle', 'font-size': 17, fill: '#1d2433' });
+          yt.setAttribute('transform', `rotate(-90 22 ${(PY0 + PY1) / 2})`);
+        }
+      ],
+      code: `<span data-blk="0"><span class="gd2-fn">ggplot</span>(births, <span class="gd2-fn">aes</span>(<span class="gd2-arg">x</span> = lwt, <span class="gd2-arg">y</span> = bwt, <span class="gd2-arg">colour</span> = smoke)) +</span>
+<span data-blk="1">  <span class="gd2-fn">geom_point</span>(<span class="gd2-arg">size</span> = <span class="gd2-num">2</span>) +</span>
+<span data-blk="2">  <span class="gd2-fn">geom_smooth</span>(<span class="gd2-arg">method</span> = <span class="gd2-str">"lm"</span>, <span class="gd2-arg">colour</span> = <span class="gd2-str">"black"</span>) +</span>
+<span data-blk="3">  <span class="gd2-fn">labs</span>(
+    <span class="gd2-arg">title</span> = <span class="gd2-str">"Mother's weight and birth weight"</span>,
+    <span class="gd2-arg">x</span> = <span class="gd2-str">"Weight at last period (lb)"</span>,
+    <span class="gd2-arg">y</span> = <span class="gd2-str">"Birth weight (g)"</span>
+  )</span>`
+    };
+  })();
+
+  // =======================================================================
+  // the engine — Emil's render(stage), one instance per stage element
+  // =======================================================================
+  function mount(key, spec) {
+    let built = false, planes = [], codeBlocks = [];
+
+    function build() {
+      const stage = document.querySelector(`.gd2-stage[data-gd2="${key}"]`);
+      if (!stage || built) return !!stage;
+      built = true;
+
+      const code = document.createElement('div');
+      code.className = 'gd2-code';
+      code.innerHTML = spec.code;
+      stage.appendChild(code);
+      codeBlocks = Array.from(code.querySelectorAll('[data-blk]'));
+
+      const plot = document.createElement('div');
+      plot.className = 'gd2-plot';
+      spec.builders.forEach(fn => {
+        const p = svgPlane();
+        fn(p.svg);
+        planes.push(p);
+        plot.appendChild(p.div);
+      });
+      stage.appendChild(plot);
+      return true;
+    }
+
+    function render(stage) {
+      if (!build()) return;
+      const N = planes.length;
+      const flat = stage >= N + 4;
+      const collapsed = stage >= N + 3;
+      const laid = stage >= 1 && !flat;
+      const exploded = stage >= 2 && !collapsed;
+      const focusIdx = (stage >= 3 && !collapsed) ? stage - 3 : -1;
+
+      const SPREAD = 75, PART = 280;
+      planes.forEach((p, i) => {
+        let fan = exploded ? 18 + ((N - 1) / 2 - i) * SPREAD : 0;
+        const focused = focusIdx >= 0 && i === focusIdx;
+        if (focusIdx >= 0 && !focused) fan += (i < focusIdx) ? PART : -PART;
+        const tilted = laid && !focused;
+        TM.anime({ targets: p.div, translateY: fan, duration: 850, easing: 'easeInOutCubic' });
+        TM.anime({ targets: p.tilt, rotateX: tilted ? 56 : 0, rotateZ: tilted ? 20 : 0,
+                   scale: exploded ? 0.82 : 1, opacity: 1,
+                   duration: 850, easing: 'easeInOutCubic' });
+        TM.anime({ targets: p.card, opacity: exploded ? 1 : 0,
+                   duration: 600, easing: 'easeInOutQuad' });
+      });
+
+      codeBlocks.forEach((b, i) => b.classList.toggle('gd2-hot', i === focusIdx));
+    }
+
+    const ids = [`${key}-lay`, `${key}-explode`];
+    for (let i = 1; i <= spec.builders.length; i++) ids.push(`${key}-f${i}`);
+    ids.push(`${key}-collapse`, `${key}-unrotate`);
+
+    TM.gate({ markerClass: `${key}-slide`, fragmentIds: ids, render });
+  }
+
+  mount('gd2', F1);
+  mount('gdh', F2);
+  mount('gds', F3);
+})();
+</script>

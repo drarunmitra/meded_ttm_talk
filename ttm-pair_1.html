@@ -1,0 +1,152 @@
+<script>
+// ---------------------------------------------------------------------
+// Bullet / panel pairing for .ttm slides.
+//
+// Bullets on the left become Reveal fragments, numbered 1..n in order.
+// Panels on the right are NOT fragments — this script shows and hides
+// them itself, so one panel can span several bullets, a bullet can have
+// no panel, and a step can have more than one image.
+//
+// Mark a panel with data-step:
+//     data-step="2"      only while bullet 2 is current
+//     data-step="2-4"    from bullet 2 through bullet 4
+//     data-step="3-"     from bullet 3 to the end of the slide
+//     data-step="1,4"    at bullets 1 and 4 only
+//     data-step="0-"     visible from the start, including before bullet 1
+//
+// A step with no panel simply shows nothing. If you would rather the
+// previous image stay up, widen its range instead.
+//
+// If no panel on a slide has data-step, they are paired 1:1 in order.
+// ---------------------------------------------------------------------
+(function () {
+
+  function parseSteps(spec, max) {
+    var on = new Set();
+    String(spec).split(',').forEach(function (part) {
+      part = part.trim();
+      var range = part.match(/^(\d+)\s*-\s*(\d*)$/);
+      if (range) {
+        var a = +range[1];
+        var b = range[2] === '' ? max : +range[2];
+        for (var i = a; i <= b; i++) on.add(i);
+      } else if (/^\d+$/.test(part)) {
+        on.add(+part);
+      }
+    });
+    return on;
+  }
+
+  // Quarto wraps a markdown image in <p>, so data-step lands on the <img>
+  // while the <p> stays in the document flow. Normalise every marked
+  // element into a real slot div that is a direct child of the panel —
+  // then the CSS has one predictable thing to position.
+  function normalise(panel) {
+    Array.from(panel.querySelectorAll('[data-step]')).forEach(function (el) {
+      var slot = document.createElement('div');
+      slot.className = 'ttm-slot';
+      slot.setAttribute('data-step', el.getAttribute('data-step'));
+      el.removeAttribute('data-step');
+      panel.appendChild(slot);
+      slot.appendChild(el);
+    });
+    // drop the wrappers Quarto left behind
+    Array.from(panel.children).forEach(function (c) {
+      if (!c.classList.contains('ttm-slot') &&
+          !c.querySelector('img') && !c.textContent.trim()) {
+        c.remove();
+      }
+    });
+    return Array.from(panel.querySelectorAll(':scope > .ttm-slot'));
+  }
+
+  // A step is any list item, plus anything you marked .fragment yourself
+  // (a blockquote, a callout, an image). Outermost wins: if you wrap a
+  // whole list in .fragment, the list is one step rather than n.
+  function collectSteps(col) {
+    if (!col) return [];
+    var nodes = Array.from(col.querySelectorAll('li, .fragment'));
+    return nodes.filter(function (n) {
+      return !nodes.some(function (m) { return m !== n && m.contains(n); });
+    });
+  }
+
+  var slides = [];
+
+  function setup() {
+    document.querySelectorAll('section.ttm').forEach(function (slide) {
+      var panel = slide.querySelector('.ttm-panel');
+      if (!panel) return;
+
+      var bullets = collectSteps(slide.querySelector('.ttm-bullets'));
+
+      // fall back to 1:1 pairing when no data-step is used on this slide
+      if (!panel.querySelector('[data-step]')) {
+        Array.from(panel.children).forEach(function (c, i) {
+          c.setAttribute('data-step', i + 1);
+        });
+      }
+
+      var panels = normalise(panel);
+      panels.forEach(function (p) {
+        p._steps = parseSteps(p.getAttribute('data-step'), bullets.length);
+        p._first = Math.min.apply(null, Array.from(p._steps).concat([Infinity]));
+      });
+
+      // Order every fragment on the slide: each bullet, then any .fragment
+      // inside the panel slot that belongs to that bullet. A panel fragment
+      // therefore gets its own keypress without advancing the bullet count,
+      // which is what lets one step reveal a second image on top.
+      var seq = [];
+      bullets.forEach(function (b, i) {
+        seq.push(b);
+        panels.forEach(function (p) {
+          if (p._first === i + 1) {
+            Array.from(p.querySelectorAll('.fragment')).forEach(function (f) {
+              seq.push(f);
+            });
+          }
+        });
+      });
+      seq.forEach(function (el, i) {
+        el.classList.add('fragment');
+        el.setAttribute('data-fragment-index', i + 1);
+      });
+
+      slides.push({ bullets: bullets, panels: panels });
+    });
+
+    Reveal.sync();
+    slides.forEach(update);
+  }
+
+  function update(s) {
+    // current step = how many bullets have been revealed
+    var step = s.bullets.filter(function (li) {
+      return li.classList.contains('visible');
+    }).length;
+
+    s.panels.forEach(function (p) {
+      p.classList.toggle('ttm-on', p._steps.has(step));
+    });
+
+    // Highlight the bullet ourselves rather than leaning on Reveal's
+    // .current-fragment, which moves onto a panel fragment during a
+    // sub-step and would un-highlight the bullet mid-point.
+    s.bullets.forEach(function (b, i) {
+      b.classList.toggle('ttm-current', i === step - 1);
+    });
+  }
+
+  function updateAll() { slides.forEach(update); }
+
+  function start() {
+    setup();
+    ['fragmentshown', 'fragmenthidden', 'slidechanged', 'ready']
+      .forEach(function (ev) { Reveal.on(ev, updateAll); });
+  }
+
+  if (window.Reveal && Reveal.isReady()) { start(); }
+  else if (window.Reveal) { Reveal.on('ready', start); }
+})();
+</script>

@@ -1,0 +1,261 @@
+---
+title: "Building Capacity in Public Health Data Science"
+subtitle: "A Five-Year Multi-Cohort Evaluation (2021–2026)"
+author: "Arun Mitra Peddireddy<sup>1,2</sup>\\*, Biju Soman<sup>1</sup>, Rakhal Gaitonde<sup>1</sup>, Gurpreet Singh<sup>3</sup>, Adrija Roy<sup>1,2</sup>"
+institute: "<sup>1</sup>Dept. of Community Medicine & Family Medicine, AIIMS Bibinagar &nbsp;&middot;&nbsp; <sup>2</sup>SCTIMST, Thiruvananthapuram &nbsp;&middot;&nbsp; <sup>3</sup>Armed Forces Medical College, Pune"
+format:
+  revealjs:
+    embed-resources: true
+    theme: [default, custom_2.scss]
+    slide-number: c/t
+    include-in-header:
+      - assets/gd2/gd2-style.html
+      - assets/gd2/anime.html
+    include-after-body:
+      - ttm-pair_1.html
+      - assets/gd2/infra.html
+      - assets/gd2/birthwt-deconstructed.html
+    title-slide-attributes:
+      data-background-image: images/logos.png
+      data-background-size: 46%
+      data-background-position: bottom 24px center
+---
+
+## Problem Statement {.ttm}
+
+:::: {.columns}
+::: {.column width="60%" .ttm-bullets}
+
+:::{.fragment}
+> Data Rich but Information Poor
+
+:::
+
+- Traditional Methods fall short
+- Data Science as an Approach
+
+<br>
+
+- But, how to build capacity?
+
+:::
+::: {.column width="40%" .ttm-panel}
+
+::: {data-step="2"}
+- Data for Better Lives (World Bank)
+- 3D Commission Report
+:::
+
+
+
+![](images/data_science_venn.png){data-step="3"}
+
+::: {data-step="4"}
+::: {.r-stack}
+![](mooc_article.png){.fragment}
+
+![](themes_lit_review.png){.fragment}
+:::
+:::
+
+
+:::
+::::
+
+## The Journey {.ttm}
+
+:::: {.columns}
+::: {.column width="55%" .ttm-bullets}
+
+- Started as in-house workshop
+
+- Grew to a national workshop series
+
+- Built Case Studies <br>_UTFORSK_ Project, UiO, Norway
+
+- DMgtAsia
+
+- Summer Schools (Residential)
+
+- Mentorship Programs (PHDMI)
+
+
+:::
+::: {.column width="45%" .ttm-panel}
+
+![](images/journey-1-rintro-flyer.png){data-step="1"}
+
+![](journey-2-nwhda.png){data-step="2"}
+<!-- ::: {data-step="3"} -->
+
+<!-- :::{.r-stack} -->
+<!-- ![](mooc_article.png) -->
+<!-- ![](themes_lit_review.png) -->
+
+<!-- ::: -->
+
+<!-- ::: -->
+
+
+::: {data-step="3"}
+::: {.r-stack}
+
+![](ds_case_studies_article_1.png){.fragment .fade-out}
+
+![](ds_case_studies_fig_2.png){.fragment}
+
+![](ds_case_studies_fig_3.png){.fragment}
+
+![](ds_case_studies_fig_4.png){.fragment}
+
+![](ds_case_studies_fig_5.png){.fragment}
+
+![](ds_case_studies_fig_1.png){.fragment}
+
+:::
+:::
+
+
+
+::: {data-step="4"}
+::: {.r-stack}
+
+![](dmgtasia_1.png){.fragment .fade-out}
+
+![](dmgt_phds_1.png){.fragment}
+
+![](dmgt_phds_2.png){.fragment}
+
+![](dmgt_asia_module_1.png){.fragment}
+
+![](dmgtasia_module_2.png){.fragment}
+
+![](dmgtaisa-github.png){.fragment}
+
+:::
+:::
+
+![](GIS4Epi.png){data-step="5"}
+
+![](phdmi-yt.png){data-step="6"}
+![](phdmi-structure.png){data-step="7"}
+
+
+:::
+::::
+
+## Five Year Evaluation {.ttm}
+
+:::: {.columns}
+::: {.column width="50%" .ttm-bullets}
+
+> Transformative Training Model 
+
+- Aspirations
+- Adoption of Newer Methods
+- Establishment of AMC Health Data Science Lab
+
+- Success Stories
+
+:::
+::: {.column width="50%" .ttm-panel}
+
+![](images/eval-1.png){data-step="1"}
+
+![](images/eval-2.png){data-step="2"}
+
+![](images/eval-3.png){data-step="3"}
+
+![](images/eval-4.png){data-step="4"}
+
+:::
+::::
+
+## Reflections {.ttm}
+
+:::: {.columns}
+::: {.column width="50%" .ttm-bullets}
+
+- Grew with aspirations
+- Data Science is crosscutting
+- Transcends Disciplines
+- Demand Increasing
+- Address Supply Gap through Capacity Building
+
+:::
+::: {.column width="50%" .ttm-panel}
+
+![](images/reflect-1.png){data-step="1"}
+
+![](images/reflect-2.png){data-step="2"}
+
+![](images/reflect-3.png){data-step="3"}
+
+:::
+::::
+
+
+## Newer Tools to Teach Data Visualisation {.gd2-slide}
+
+::: {.gd2-stage-wrap}
+<div class="gd2-stage" data-gd2="gd2"></div>
+:::
+
+::: {.gd2-listing}
+```{.r code-line-numbers="|1|2|3|4-9|"}
+ggplot(births, aes(x = smoke, y = bwt, fill = smoke)) +
+  geom_boxplot(alpha = 0.75, outlier.shape = NA) +
+  geom_jitter(width = 0.12, alpha = 0.35) +
+  geom_hline(yintercept = 2500, linetype = "dashed") +
+  labs(
+    title = "Birth weight by maternal smoking",
+    y = "Birth weight (g)",
+    x = NULL
+  )
+```
+:::
+
+[]{.fragment .gd2-frag id="gd2-lay"}
+[]{.fragment .gd2-frag id="gd2-explode"}
+[]{.fragment .gd2-frag id="gd2-f1"}
+[]{.fragment .gd2-frag id="gd2-f2"}
+[]{.fragment .gd2-frag id="gd2-f3"}
+[]{.fragment .gd2-frag id="gd2-f4"}
+[]{.fragment .gd2-frag id="gd2-collapse"}
+[]{.fragment .gd2-frag id="gd2-unrotate"}
+
+```{=html}
+<script>
+/* Pair the code block's highlight steps with the animation's own steps, so one
+   arrow press moves both. Quarto emits the fragments in document order, which
+   would otherwise mean 13 presses instead of 8. Reveal reads
+   data-fragment-index at sync time, so set them and re-sync.
+
+   Step 1 lay, 2 explode, 3..6 one layer each, 7 collapse, 8 unrotate.
+   The code block has five fragments: line 1, line 2, line 3, lines 4-9, and a
+   final one that clears the highlight as the stack rejoins. */
+(function wait() {
+  var sec = document.querySelector('section.gd2-slide');
+  if (typeof Reveal === 'undefined' || !Reveal.sync || !sec) { setTimeout(wait, 50); return; }
+  var code = [3, 4, 5, 6, 7], i = 0;
+  sec.querySelectorAll('.gd2-listing .fragment').forEach(function (el) {
+    if (i < code.length) el.setAttribute('data-fragment-index', code[i++]);
+  });
+  var gd2 = {'gd2-lay': 1, 'gd2-explode': 2, 'gd2-f1': 3, 'gd2-f2': 4,
+             'gd2-f3': 5, 'gd2-f4': 6, 'gd2-collapse': 7, 'gd2-unrotate': 8};
+  Object.keys(gd2).forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.setAttribute('data-fragment-index', gd2[id]);
+  });
+  Reveal.sync();
+})();
+</script>
+```
+
+::: {.notes}
+Eight clicks. A finished ggplot2 figure tilts back, the layers fan apart, and
+each layer lights up beside the line of code that made it. Teaching material
+built for the workshop, not borrowed slides.
+:::
+
+# Thank You

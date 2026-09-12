@@ -1,0 +1,122 @@
+---
+title: "Building Capacity in Public Health Data Science"
+subtitle: "A Five-Year Multi-Cohort Evaluation (2021–2026)"
+author: "Arun Mitra<sup>1</sup>\\*, Biju Soman<sup>2</sup>, Rakhal Gaitonde<sup>2</sup>, Gurpreet Singh<sup>2,3</sup>, Adrija Roy<sup>2</sup>"
+institute: "<sup>1</sup>Dept. of Community Medicine & Family Medicine, AIIMS Bibinagar &nbsp;&middot;&nbsp; <sup>2</sup>SCTIMST, Thiruvananthapuram &nbsp;&middot;&nbsp; <sup>3</sup>Armed Forces Medical College, Pune"
+format:
+  revealjs:
+    embed-resources: true
+    theme: [default, custom.scss]
+    slide-number: c/t
+    include-after-body: ttm-pair.html
+    title-slide-attributes:
+      data-background-image: images/logos.png
+      data-background-size: 46%
+      data-background-position: bottom 24px center
+---
+
+## Problem Statement {.ttm}
+
+:::: {.ttm-bullets}
+
+> Data Rich but Information Poor
+
+- Traditional Methods fall short
+- Data Science as an Approach
+
+<br>
+
+- But how to build capacity?
+
+:::
+
+## The Journey {.ttm}
+
+:::: {.columns}
+::: {.column width="50%" .ttm-bullets}
+
+- Started as an in-house workshop - RIntro2021
+
+- Grew to a national workshop series
+
+- Reviewed *Current Status and Scope for Public Health Data Science Education*
+
+- UTFORSK Project, University of Oslo (Case Studies)
+
+- DMgtAsia
+
+- Summer Schools @ IIT-Bombay & IISc- Bangalore (Residential)
+
+- PHDMI
+
+- Transformative Training Model (TTM)
+
+:::
+::: {.column width="50%" .ttm-panel}
+
+![](images/journey-1.png)
+
+![](images/journey-2.png)
+
+![](images/journey-3.png)
+
+![](images/journey-4.png)
+
+![](images/journey-5.png)
+
+![](images/journey-6.png)
+
+![](images/journey-7.png)
+
+![](images/journey-8.png)
+
+:::
+::::
+
+## Five Year Evaluation {.ttm}
+
+:::: {.columns}
+::: {.column width="50%" .ttm-bullets}
+
+- Aspirations
+- Adoption of Newer Methods
+- Establishment of AMC Health Data Science Lab
+
+- Success Stories
+
+:::
+::: {.column width="50%" .ttm-panel}
+
+![](images/eval-1.png)
+
+![](images/eval-2.png)
+
+![](images/eval-3.png)
+
+![](images/eval-4.png)
+
+:::
+::::
+
+## Reflections {.ttm}
+
+:::: {.columns}
+::: {.column width="50%" .ttm-bullets}
+
+- Grew with aspirations
+- Data Science Transcends Diciplines
+- Address Demand-Supply Gap through Capacity Building
+
+:::
+::: {.column width="50%" .ttm-panel}
+
+![](images/reflect-1.png)
+
+![](images/reflect-2.png)
+
+![](images/reflect-3.png)
+
+:::
+::::
+
+# Thank You
