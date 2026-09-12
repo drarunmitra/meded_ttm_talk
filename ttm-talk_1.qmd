@@ -1,8 +1,7 @@
 ---
 title: "Building Capacity in Public Health Data Science"
 subtitle: "A Five-Year Multi-Cohort Evaluation (2021–2026)"
-author: "Arun Mitra Peddireddy<sup>1,2</sup>\\*, Biju Soman<sup>1</sup>, Rakhal Gaitonde<sup>1</sup>, Gurpreet Singh<sup>3</sup>, Adrija Roy<sup>1,2</sup>"
-institute: "<sup>1</sup>Dept. of Community Medicine & Family Medicine, AIIMS Bibinagar &nbsp;&middot;&nbsp; <sup>2</sup>SCTIMST, Thiruvananthapuram &nbsp;&middot;&nbsp; <sup>3</sup>Armed Forces Medical College, Pune"
+author: "Dr. Arun Mitra"
 format:
   revealjs:
     embed-resources: true
@@ -144,58 +143,12 @@ format:
 :::
 ::::
 
-## Five Year Evaluation {.ttm}
+## Transformative Training Model (TTM)
 
-:::: {.columns}
-::: {.column width="50%" .ttm-bullets}
-
-> Transformative Training Model 
-
-- Aspirations
-- Adoption of Newer Methods
-- Establishment of AMC Health Data Science Lab
-
-- Success Stories
-
-:::
-::: {.column width="50%" .ttm-panel}
-
-![](images/eval-1.png){data-step="1"}
-
-![](images/eval-2.png){data-step="2"}
-
-![](images/eval-3.png){data-step="3"}
-
-![](images/eval-4.png){data-step="4"}
-
-:::
-::::
-
-## Reflections {.ttm}
-
-:::: {.columns}
-::: {.column width="50%" .ttm-bullets}
-
-- Grew with aspirations
-- Data Science is crosscutting
-- Transcends Disciplines
-- Demand Increasing
-- Address Supply Gap through Capacity Building
-
-:::
-::: {.column width="50%" .ttm-panel}
-
-![](images/reflect-1.png){data-step="1"}
-
-![](images/reflect-2.png){data-step="2"}
-
-![](images/reflect-3.png){data-step="3"}
-
-:::
-::::
+![](ttm_ladder.png)
 
 
-## Newer Tools to Teach Data Visualisation {.gd2-slide}
+## Adoption of Newer Methods {.gd2-slide}
 
 ::: {.gd2-stage-wrap}
 <div class="gd2-stage" data-gd2="gd2"></div>
@@ -252,6 +205,49 @@ ggplot(births, aes(x = smoke, y = bwt, fill = smoke)) +
 </script>
 ```
 
+## Establishment of Data Science Lab
+
+> AMC Data Science Lab at SCTIMST, Trivandrm doption of Newer Methods
+
+![](amc_data_science_lab.png)
+
+## Did We Build Capacity?
+
+
+
+:::: {.columns}
+::: {.column width="50%"}
+
+- Aspirations
+- Adoption of Newer Methods
+- Establishment of AMC Health Data Science Lab
+
+- Success Stories
+
+:::
+::: {.column width="50%" .ttm-panel}
+
+![](aspirations.png){data-step="1"}
+
+![](images/eval-2.png){data-step="2"}
+
+![](images/eval-3.png){data-step="3"}
+
+![](images/eval-4.png){data-step="4"}
+
+:::
+::::
+
+
+## Reflections {.ttm}
+
+- Grew with aspirations
+- Data Science is crosscutting
+- Transcends Disciplines
+- Demand Increasing
+- Address Supply Gap through Capacity Building
+
+## Newer Tools to Teach 
 ::: {.notes}
 Eight clicks. A finished ggplot2 figure tilts back, the layers fan apart, and
 each layer lights up beside the line of code that made it. Teaching material
