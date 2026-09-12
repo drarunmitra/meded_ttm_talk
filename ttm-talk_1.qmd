@@ -144,7 +144,7 @@ format:
 
 ## Transformative Training Model (TTM)
 
-![](ttm_ladder.png)
+![](ttm_ladder.png){fig-align="center"}
 
 
 ## Adoption of Newer Methods {.gd2-slide}
@@ -208,7 +208,7 @@ ggplot(births, aes(x = smoke, y = bwt, fill = smoke)) +
 
 > AMC Data Science Lab at SCTIMST, Trivandrum
 
-![](amc_data_science_lab.png)
+![](amc_data_science_lab.png){fig-align="center"}
 
 ## Did We Build Capacity?
 
@@ -217,7 +217,7 @@ ggplot(births, aes(x = smoke, y = bwt, fill = smoke)) +
 
 ## Did We Build Capacity?
 
-![](hex-stickers.png)
+![](hex-stickers.png){fig-align="center"}
 
 ## Reflections {.ttm}
 
