@@ -6,7 +6,6 @@ format:
   revealjs:
     embed-resources: true
     theme: [default, custom_2.scss]
-    slide-number: c/t
     include-in-header:
       - assets/gd2/gd2-style.html
       - assets/gd2/anime.html
@@ -213,15 +212,25 @@ ggplot(births, aes(x = smoke, y = bwt, fill = smoke)) +
 
 ## Did We Build Capacity?
 
-![](images/Screenshot_20260912-111023.png)
+![](images/Screenshot_20260912-111023.png){height="400px"}
 
-![](images/Screenshot_20260912-111207.png)
+## Did We Build Capacity?
+![](images/Screenshot_20260912-111207.png){height="400px"}
 
-![](images/Screenshot_20260912-111244.png)
+## Did We Build Capacity?
+![](images/Screenshot_20260912-111244.png){height="400px"}
 
-![](images/Screenshot_20260912-111256.png)
+## Did We Build Capacity?
+![](images/Screenshot_20260912-111256.png){height="400px"}
 
-![](images/Screenshot_20260912-111348.png)
+## Did We Build Capacity?
+
+![](images/Screenshot_20260912-111348.png){height="400px"}
+
+
+## Did We Build Capacity?
+
+![](hex-stickers.png)
 
 ## Reflections {.ttm}
 
