@@ -212,20 +212,7 @@ ggplot(births, aes(x = smoke, y = bwt, fill = smoke)) +
 
 ## Did We Build Capacity?
 
-![](images/Screenshot_20260912-111023.png){height="400px"}
-
-## Did We Build Capacity?
-![](images/Screenshot_20260912-111207.png){height="400px"}
-
-## Did We Build Capacity?
-![](images/Screenshot_20260912-111244.png){height="400px"}
-
-## Did We Build Capacity?
-![](images/Screenshot_20260912-111256.png){height="400px"}
-
-## Did We Build Capacity?
-
-![](images/Screenshot_20260912-111348.png){height="400px"}
+![](images/Screenshot_20260912-111023.png){height="400px"} ![](images/Screenshot_20260912-111207.png){height="400px"} ![](images/Screenshot_20260912-111244.png){height="400px"} ![](images/Screenshot_20260912-111256.png){height="400px"} ![](images/Screenshot_20260912-111348.png){height="400px"}
 
 
 ## Did We Build Capacity?
